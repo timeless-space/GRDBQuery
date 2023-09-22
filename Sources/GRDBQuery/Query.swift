@@ -5,7 +5,7 @@ import SwiftUI
 @propertyWrapper
 public struct Query<Request: Queryable> {
     /// For a full discussion of these cases, see <doc:QueryableParameters>.
-    private enum Configuration {
+    public enum Configuration {
         case constant(Request)
         case initial(Request)
         case binding(Binding<Request>)
@@ -18,7 +18,7 @@ public struct Query<Request: Queryable> {
     @Environment(\.queryObservationEnabled) private var queryObservationEnabled
     
     /// The object that keeps on observing the database as long as it is alive.
-    @StateObject private var tracker = Tracker()
+    @StateObject public var tracker = Tracker()
     
     /// The `Query` configuration.
     private let configuration: Configuration
@@ -209,7 +209,7 @@ public struct Query<Request: Queryable> {
     }
     
     /// The object that keeps on observing the database as long as it is alive.
-    private class Tracker: ObservableObject {
+    public class Tracker: ObservableObject {
         /// The database value. Published so that view is redrawn when
         /// the value changes.
         var value: Request.Value?
@@ -219,8 +219,12 @@ public struct Query<Request: Queryable> {
         var request: Request?
         
         // Actual subscription
-        private var trackedRequest: Request?
-        private var cancellable: AnyCancellable?
+        public var trackedRequest: Request?
+        public var cancellable: AnyCancellable?
+
+        public func stopObservations() {
+            cancellable = nil
+        }
         
         func update(
             queryObservationEnabled: Bool,
